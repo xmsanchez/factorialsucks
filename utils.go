@@ -16,8 +16,8 @@ import (
 var emailRegex = regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
 
 func readCredentials(c *cli.Context) (string, string) {
-	email := c.String("email")
-	if email == "" {
+	email, exists := os.LookupEnv("FACTORIAL_EMAIL")
+	if !exists {
 		reader := bufio.NewReader(os.Stdin)
 		fmt.Print("Email: ")
 		email, _ = reader.ReadString('\n')
@@ -27,9 +27,13 @@ func readCredentials(c *cli.Context) (string, string) {
 		log.Fatalln("Email not valid")
 	}
 
-	fmt.Print("Password: ")
-	bytePassword, _ := terminal.ReadPassword(int(syscall.Stdin))
-	password := string(bytePassword)
+	var password string
+	password, exists = os.LookupEnv("FACTORIAL_PASSWORD")
+	if !exists {
+		fmt.Print("Password: ")
+		bytePassword, _ := terminal.ReadPassword(int(syscall.Stdin))
+		password = string(bytePassword)
+	}
 	if password == "" {
 		log.Fatalln("\nNo password provided")
 	}

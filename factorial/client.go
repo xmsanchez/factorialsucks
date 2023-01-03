@@ -113,6 +113,15 @@ func (c *factorialClient) ClockIn(dry_run bool) {
 		spinner.Restart()
 		spinner.Reverse()
 		t = time.Date(c.year, time.Month(c.month), d.Day, 0, 0, 0, 0, time.UTC)
+
+		if t.Weekday() == 5 {  // if it's Friday
+			shift.Clock_in = "09:00"
+			shift.Clock_out = "15:00"
+		} else {
+			shift.Clock_in = c.clock_in
+			shift.Clock_out = c.clock_out
+		}
+
 		message = fmt.Sprintf("%s... ", t.Format("02 Jan"))
 		spinner.Prefix = message + " "
 		clocked_in, clocked_times := c.clockedIn(d.Day, shift)
@@ -138,7 +147,7 @@ func (c *factorialClient) ClockIn(dry_run bool) {
 				}
 			}
 			if ok {
-				message = fmt.Sprintf("%s ✅ %s - %s\n", message, c.clock_in, c.clock_out)
+				message = fmt.Sprintf("%s ✅ %s - %s\n", message, shift.Clock_in, shift.Clock_out)
 			} else {
 				message = fmt.Sprintf("%s ❌ Error when attempting to clock in\n", message)
 			}

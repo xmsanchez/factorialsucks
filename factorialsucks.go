@@ -41,17 +41,15 @@ func main() {
 				DefaultText: "current month",
 				Value:       int(today.Month()),
 			},
-			&cli.StringFlag{
+			&cli.StringSliceFlag{
 				Name:    "clock-in",
 				Aliases: []string{"ci"},
 				Usage:   "clock-in time `HH:MM`",
-				Value:   "10:00",
 			},
-			&cli.StringFlag{
+			&cli.StringSliceFlag{
 				Name:    "clock-out",
 				Aliases: []string{"co"},
-				Usage:   "clock-in time `HH:MM`",
-				Value:   "18:00",
+				Usage:   "clock-out time `HH:MM`",
 			},
 			&cli.BoolFlag{
 				Name:    "today",
@@ -97,17 +95,26 @@ func factorialsucks(c *cli.Context) error {
 		year = c.Int("year")
 		month = c.Int("month")
 	}
-	clock_in := c.String("clock-in")
-	clock_out := c.String("clock-out")
+	clock_in := c.StringSlice("clock-in")
+	clock_out := c.StringSlice("clock-out")
 	dry_run := c.Bool("dry-run")
 	until_today := c.Bool("until-today")
 	reset_month := c.Bool("reset-month")
 
-	client := factorial.NewFactorialClient(email, password, year, month, clock_in, clock_out, today_only, until_today)
-	if reset_month {
-		client.ResetMonth()
-	} else {
-		client.ClockIn(dry_run)
+	for i, ci := range clock_in {
+		co := clock_out[i]
+		client := factorial.NewFactorialClient(email, password, year, month, ci, co, today_only, until_today)
+		if reset_month {
+			client.ResetMonth()
+		} else {
+			client.ClockIn(dry_run)
+		}
 	}
+
+	if reset_month {
+		client := factorial.NewFactorialClient(email, password, year, month, "09:00", "14:00", today_only, until_today)
+		client.ResetMonth()
+	}
+
 	return nil
 }
