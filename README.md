@@ -10,12 +10,21 @@ ALL CREDITS FOR THE ORIGINAL SCRIPT GO TO [alejoar](https://github.com/alejoar/f
 
 ## Requirements for building
 
-:warning: You need to have **go environment** installed to be able to run and build the app.
+:warning: You need to have **go environment** installed or use the **official go docker image** to be able to run and build the app.
 
 ### On Ubuntu
 
+If using docker, check that go is working with this command:
+
+```bash
+docker run --rm --name golang -v $(pwd):/app -w /app golang go version
+```
+
+...otherwise just install it through the package manager:
+
 ```bash
 sudo apt install golang-go
+go version
 ```
 
 ### On MacOs
@@ -24,11 +33,19 @@ sudo apt install golang-go
 
 ## Build & install
 
+If you chose to use docker:
+
+```bash
+docker run --rm --name golang -v $(pwd):/app -w /app golang go build -o build/factorialsucks factorialsucks.go utils.go
+```
+
+Else, use this:
+
 ```bash
 go build -o build/factorialsucks factorialsucks.go utils.go
 ```
 
-Then move the binary to a more convenient path:
+Then move the binary to a more convenient path (if you were in docker, remember to exit the container):
 
 ```bash
 sudo mv build/factorialsucks /usr/local/bin
